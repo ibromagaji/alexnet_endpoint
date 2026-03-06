@@ -19,12 +19,12 @@ s3_client = boto3.client(
     's3',
     aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
     aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-    region_name=os.getenv("AWS_REGION", "us-east-1")
+    region_name=os.getenv("AWS_REGION")
 )
 
-S3_BUCKET_NAME = "your-bucket-name"
-S3_MODEL_KEY = "path/to/your/model.pkl"  # e.g., "models/random_forest.pkl"
-LOCAL_MODEL_PATH = "/tmp/current_model.pkl"  # Store temporarily
+S3_BUCKET_NAME = "alexnet-weights"
+S3_MODEL_KEY = "models/best_model.ckpt"  # e.g., "models/random_forest.pkl"
+LOCAL_MODEL_PATH = "/tmp/best_model.ckpt"  # Store temporarily
 
 
 DEVICE  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
