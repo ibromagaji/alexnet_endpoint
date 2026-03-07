@@ -41,16 +41,17 @@ def load_model_from_s3():
     """Downloads model from S3 and loads it into the global variable."""
     global model
     try:
-        download_model
-        # Load the model (adjust based on your model's serialization format)
-        model = torch.load(LOCAL_MODEL_PATH,map_location = DEVICE)
-        model.eval()
+        # Use the authenticated s3_client, not a new bare client
+        print(f"Downloading model from s3://{S3_BUCKET_NAME}/{S3_MODEL_KEY} ...")
+        s3_client.download_file(S3_BUCKET_NAME, S3_MODEL_KEY, LOCAL_MODEL_PATH)
+        print("Download complete. Loading model...")
 
+        model = torch.load(LOCAL_MODEL_PATH, map_location=DEVICE)
+        model.eval()
         print("Model loaded successfully and ready for inference.")
 
     except Exception as e:
         print(f"FATAL: Could not load model from S3: {e}")
-        # In production, you might want to raise an exception to prevent the app from starting
         model = None
 
 
