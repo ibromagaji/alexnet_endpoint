@@ -46,7 +46,11 @@ def load_model_from_s3():
         s3_client.download_file(S3_BUCKET_NAME, S3_MODEL_KEY, LOCAL_MODEL_PATH)
         print("Download complete. Loading model...")
 
-        model = torch.load(LOCAL_MODEL_PATH, map_location=DEVICE)
+        model = models.alexnet(weights=None)
+
+        state_dict = torch.load(LOCAL_MODEL_PATH, map_location=DEVICE)
+        model.load_state_dict(state_dict)
+        model.to(DEVICE)
         model.eval()
         print("Model loaded successfully and ready for inference.")
 
