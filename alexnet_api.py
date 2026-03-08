@@ -46,7 +46,7 @@ def load_model_from_s3():
         s3_client.download_file(S3_BUCKET_NAME, S3_MODEL_KEY, LOCAL_MODEL_PATH)
         print("Download complete. Loading model...")
 
-        model = models.alexnet(weights=None)
+        model = models.alexnet(weights=None,num_classes = 29)
 
         state_dict = torch.load(LOCAL_MODEL_PATH, map_location=DEVICE)
         model.load_state_dict(state_dict)
