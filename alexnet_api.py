@@ -11,6 +11,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 from torchvision import models
+import json
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,27 +25,42 @@ s3_client = boto3.client(
 
 S3_BUCKET_NAME = "alexnet-weights"
 S3_MODEL_KEY = "models/best_model.ckpt"  # e.g., "models/random_forest.pkl"
-LOCAL_MODEL_PATH = "/tmp/best_model.ckpt"  # Store temporarily
+LOCAL_MODEL_PATH = "/tmp/best_model.ckpt" # Store temporarily
+S3_BUCKET_CLASSNAMES_NAME = 'alexnet-class-names'
+S3_CLASSNAME_FILE = '//alexnet-class-names'
+LOCAL_CLASSNAME_FILE = '/tmp/class_names'
 
 
 DEVICE  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = None
+idx_class = None
 
 def download_model():
     s3 = boto3.client('s3')
     s3.download_file(S3_BUCKET_NAME, S3_MODEL_KEY, LOCAL_MODEL_PATH)
     print("Download complete. Loading model...")
 
+def download_classnames():
+    s3 = boto3.client('s3')
+    s3.download_file(S3_BUCKET_CLASSNAMES_NAME,S3_CLASSNAME_FILE,LOCAL_CLASSNAME_FILE)
+    
+                      
+
 
 def load_model_from_s3():
     """Downloads model from S3 and loads it into the global variable."""
-    global model
+    global model,idx_class
     try:
         # Use the authenticated s3_client, not a new bare client
         print(f"Downloading model from s3://{S3_BUCKET_NAME}/{S3_MODEL_KEY} ...")
         s3_client.download_file(S3_BUCKET_NAME, S3_MODEL_KEY, LOCAL_MODEL_PATH)
         print("Download complete. Loading model...")
+        s3.download_file(S3_BUCKET_CLASSNAMES_NAME,S3_CLASSNAME_FILE,LOCAL_CLASSNAME_FILE)
+        # Load class names from downloaded JSON
+        with open(LOCAL_CLASSNAME_FILE, "r") as f:
+            idx_to_class = json.load(f)
+        print('Downloaded class names successfully')
 
         model = models.alexnet(weights=None,num_classes = 29)
 
@@ -115,4 +131,8 @@ async def predict(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Inference failed: {e}")
 
-    return {"prediction": prediction}
+    return {
+    "prediction": prediction,
+    "class_name": idx_class[str(prediction)],  # JSON keys are strings!
+    "confidence": round(confidence * 100, 2)
+    }
