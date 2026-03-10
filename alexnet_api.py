@@ -56,11 +56,6 @@ def load_model_from_s3():
         print(f"Downloading model from s3://{S3_BUCKET_NAME}/{S3_MODEL_KEY} ...")
         s3_client.download_file(S3_BUCKET_NAME, S3_MODEL_KEY, LOCAL_MODEL_PATH)
         print("Download complete. Loading model...")
-        s3_client.download_file(S3_BUCKET_CLASSNAMES_NAME,S3_CLASSNAME_FILE,LOCAL_CLASSNAME_FILE)
-        # Load class names from downloaded JSON
-        with open(LOCAL_CLASSNAME_FILE, "r") as f:
-            idx_to_class = json.load(f)
-        print('Downloaded class names successfully')
 
         model = models.alexnet(weights=None,num_classes = 29)
 
@@ -73,6 +68,18 @@ def load_model_from_s3():
     except Exception as e:
         print(f"FATAL: Could not load model from S3: {e}")
         model = None
+
+    try:
+        s3_client.download_file(S3_BUCKET_CLASSNAMES_NAME,S3_CLASSNAME_FILE,LOCAL_CLASSNAME_FILE)
+        # Load class names from downloaded JSON
+        with open(LOCAL_CLASSNAME_FILE, "r") as f:
+            idx_to_class = json.load(f)
+        print('Downloaded class names successfully')
+
+    except Exception as e:
+        print('could not download class names')
+        idx_class = None
+        
 
 
 @asynccontextmanager
