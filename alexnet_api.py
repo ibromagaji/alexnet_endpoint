@@ -27,8 +27,8 @@ S3_BUCKET_NAME = "alexnet-weights"
 S3_MODEL_KEY = "models/best_model.ckpt"  # e.g., "models/random_forest.pkl"
 LOCAL_MODEL_PATH = "/tmp/best_model.ckpt" # Store temporarily
 S3_BUCKET_CLASSNAMES_NAME = 'alexnet-class-names'
-S3_CLASSNAME_FILE = '//alexnet-class-names'
-LOCAL_CLASSNAME_FILE = '/tmp/class_names'
+S3_CLASSNAME_FILE = 'class_names.json'
+LOCAL_CLASSNAME_FILE = '/tmp/class_names.json'
 
 
 DEVICE  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -77,7 +77,7 @@ def load_model_from_s3():
         print('Downloaded class names successfully')
 
     except Exception as e:
-        print('could not download class names')
+        print('ERROR:Could not download class names: {e}')
         idx_class = None
         
 
