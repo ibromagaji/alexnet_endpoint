@@ -140,6 +140,5 @@ async def predict(file: UploadFile = File(...)):
 
     return {
     "prediction": prediction,
-    "class_name": idx_class[str(prediction)],  # JSON keys are strings!
-    "confidence": round(confidence * 100, 2)
+    "class_name": idx_class[str(prediction)]  # JSON keys are strings!
     }
