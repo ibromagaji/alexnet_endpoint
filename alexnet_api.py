@@ -73,7 +73,7 @@ def load_model_from_s3():
         s3_client.download_file(S3_BUCKET_CLASSNAMES_NAME,S3_CLASSNAME_FILE,LOCAL_CLASSNAME_FILE)
         # Load class names from downloaded JSON
         with open(LOCAL_CLASSNAME_FILE, "r") as f:
-            idx_to_class = json.load(f)
+            idx_class = json.load(f)
         print('Downloaded class names successfully')
 
     except Exception as e:
