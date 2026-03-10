@@ -56,7 +56,7 @@ def load_model_from_s3():
         print(f"Downloading model from s3://{S3_BUCKET_NAME}/{S3_MODEL_KEY} ...")
         s3_client.download_file(S3_BUCKET_NAME, S3_MODEL_KEY, LOCAL_MODEL_PATH)
         print("Download complete. Loading model...")
-        s3.download_file(S3_BUCKET_CLASSNAMES_NAME,S3_CLASSNAME_FILE,LOCAL_CLASSNAME_FILE)
+        s3_client.download_file(S3_BUCKET_CLASSNAMES_NAME,S3_CLASSNAME_FILE,LOCAL_CLASSNAME_FILE)
         # Load class names from downloaded JSON
         with open(LOCAL_CLASSNAME_FILE, "r") as f:
             idx_to_class = json.load(f)
