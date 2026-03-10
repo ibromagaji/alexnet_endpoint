@@ -77,7 +77,7 @@ def load_model_from_s3():
         print('Downloaded class names successfully')
 
     except Exception as e:
-        print('ERROR:Could not download class names: {e}')
+        print(f'ERROR:Could not download class names: {e}')
         idx_class = None
         
 
